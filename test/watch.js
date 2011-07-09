@@ -38,6 +38,17 @@ exports.watch = function () {
                     'x.txt' : x1,
                     'y.txt' : y0,
                 });
+                
+                fs.unlink(__dirname + '/watch/y.txt', function () {
+                    setTimeout(function () {
+                        var c3 = {};
+                        vm.runInNewContext(b.bundle(), c3);
+                        assert.deepEqual(c3.require('files', '/'), {
+                            'x.txt' : x1,
+                        });
+                    }, 300);
+                })
+                
                 fn.end();
             });
         });
