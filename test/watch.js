@@ -12,8 +12,11 @@ function write (file, x, cb) {
 }
 
 exports.watch = function () {
+    try { fs.mkdir(__dirname + '/watch', '0777') } catch (e) {}
     try { fs.unlinkSync(__dirname + '/watch/x.txt') } catch (e) {}
     try { fs.unlinkSync(__dirname + '/watch/y.txt') } catch (e) {}
+    try { fs.mkdir(__dirname + '/watch/subdir', '0777') } catch (e) {}
+    try { fs.unlinkSync(__dirname + '/watch/subdir/z.txt') } catch (e) {}
     
     var x0 = Math.random();
     write('x.txt', x0, function () {
@@ -38,18 +41,17 @@ exports.watch = function () {
                     'x.txt' : x1,
                     'y.txt' : y0,
                 });
-                
-                fs.unlink(__dirname + '/watch/y.txt', function () {
-                    setTimeout(function () {
-                        var c3 = {};
-                        vm.runInNewContext(b.bundle(), c3);
-                        assert.deepEqual(c3.require('files', '/'), {
-                            'x.txt' : x1,
-                        });
-                    }, 300);
-                })
-                
-                fn.end();
+                var z0 = Math.random();
+                write('subdir/z.txt', z0, function () {
+                    var c3 = {};
+                    vm.runInNewContext(b.bundle(), c3);
+                    assert.deepEqual(c3.require('files', '/'), {
+                        'x.txt' : x1,
+                        'y.txt' : y0,
+                        'subdir/z.txt' : z0,
+                    });
+                    fn.end();
+                });
             });
         });
     });
