@@ -7,6 +7,8 @@ module.exports = function (target, dir, optsOrEx) {
     if (!target) throw new Error('Target name required');
     if (!dir) throw new Error('Directory or files required');
     
+    var dst = path.normalize('/node_modules/' + target + '/index.js');
+    
     var opts = typeof optsOrEx === 'object' && !Array.isArray(optsOrEx)
         ? optsOrEx
         : { extension : optsOrEx }
@@ -87,8 +89,6 @@ module.exports = function (target, dir, optsOrEx) {
         findit.sync(dir, finder);
         
         var include = function (files) {
-            var dst = path.normalize('/node_modules/' + target);
-            
             Object.keys(bundle.files).forEach(function (key) {
                 if (bundle.files[key].target === dst) {
                     delete bundle.files[key];
